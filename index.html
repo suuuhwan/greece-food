@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taste of Hellas | 그리스 온라인 미식 전시관</title>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>
+    :root {
+      --greek-blue: #0D5EAF;
+      --greek-dark: #083B70;
+      --greek-light: #EBF4FC;
+      --olive-gold: #C5A059;
+      --bg-white: #FFFFFF;
+      --bg-gray: #F8FAFC;
+      --text-main: #1E293B;
+      --text-sub: #64748B;
+      --border-color: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { background-color: var(--bg-white); color: var(--text-main); line-height: 1.6; }
+
+    /* 상단 내비게이션 */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.9rem 5%;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 0.5rem;
+    }
+
+    .logo {
+      font-weight: 800; font-size: 1.15rem; color: var(--greek-blue);
+      letter-spacing: -0.5px; display: flex; align-items: center; gap: 0.4rem;
+    }
+    .logo span { color: var(--olive-gold); font-weight: 600; font-size: 0.9rem; }
+
+    nav { display: flex; gap: 1.4rem; }
+    nav a { text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 0.92rem; transition: color 0.2s; }
+    nav a:hover { color: var(--greek-blue); }
+
+    .bgm-btn {
+      background: var(--greek-light); color: var(--greek-blue);
+      border: 1.5px solid var(--greek-blue);
+      padding: 0.45rem 1rem; border-radius: 999px;
+      font-weight: 700; font-size: 0.85rem; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; gap: 0.35rem;
+    }
+    .bgm-btn.playing { background: var(--greek-blue); color: #fff; box-shadow: 0 0 12px rgba(13, 94, 175, 0.4); }
+
+    /* 히어로 섹션 */
+    .hero {
+      background: linear-gradient(135deg, var(--greek-dark) 0%, var(--greek-blue) 65%, #2B7FD4 100%);
+      color: #fff; text-align: center; padding: 5.5rem 5% 5rem;
+    }
+    .hero-badge {
+      display: inline-block; background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 0.35rem 1rem; border-radius: 999px;
+      font-size: 0.85rem; font-weight: 600; margin-bottom: 1.2rem;
+    }
+    .hero h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 1rem; letter-spacing: -1px; }
+    .hero p { font-size: 1.08rem; opacity: 0.9; max-width: 620px; margin: 0 auto 2rem; }
+    .hero-cta {
+      display: inline-block; background: #fff; color: var(--greek-blue);
+      font-weight: 700; padding: 0.85rem 2rem; border-radius: 999px;
+      text-decoration: none; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); transition: transform 0.2s;
+    }
+    .hero-cta:hover { transform: translateY(-2px); }
+
+    /* 공통 섹션 */
+    section { padding: 4.5rem 5%; max-width: 1140px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-tag {
+      color: var(--olive-gold); font-weight: 700; font-size: 0.85rem;
+      text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.4rem;
+    }
+    .section-header h2 { font-size: 1.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.6rem; }
+    .section-header p { color: var(--text-sub); font-size: 0.98rem; }
+
+    /* 섹션 2: 소개 */
+    .intro-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+    .intro-card {
+      background: var(--bg-gray); border: 1px solid var(--border-color);
+      border-radius: 16px; padding: 2rem 1.5rem; text-align: center;
+    }
+    .intro-icon { font-size: 2.3rem; margin-bottom: 0.8rem; }
+    .intro-card h3 { font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--greek-dark); }
+    .intro-card p { font-size: 0.92rem; color: var(--text-sub); }
+
+    /* 섹션 3: 갤러리 */
+    .gallery-bg { background: var(--bg-gray); max-width: 100%; }
+    .gallery-inner { max-width: 1140px; margin: 0 auto; }
+    .food-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 1.8rem; }
+    .food-card {
+      background: #fff; border-radius: 18px; overflow: hidden;
+      border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+      cursor: pointer; transition: transform 0.25s, box-shadow 0.25s;
+      display: flex; flex-direction: column;
+    }
+    .food-card:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(13, 94, 175, 0.14); border-color: var(--greek-blue); }
+    .food-thumb {
+      height: 200px; background: linear-gradient(135deg, #1E6BB8, #5BA4E6);
+      position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .food-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .img-fallback { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 1rem; }
+    .img-fallback .emoji { font-size: 3.2rem; margin-bottom: 0.3rem; }
+    .img-fallback .file-hint { font-size: 0.78rem; background: rgba(0, 0, 0, 0.25); padding: 0.2rem 0.6rem; border-radius: 6px; }
+    .food-badge {
+      position: absolute; top: 12px; left: 12px; background: rgba(255, 255, 255, 0.92);
+      color: var(--greek-blue); font-weight: 700; font-size: 0.78rem; padding: 0.25rem 0.7rem; border-radius: 999px;
+    }
+    .food-body { padding: 1.4rem; flex: 1; display: flex; flex-direction: column; }
+    .food-title { font-size: 1.22rem; font-weight: 800; margin-bottom: 0.2rem; }
+    .food-greek { color: var(--greek-blue); font-size: 0.88rem; font-weight: 600; margin-bottom: 0.7rem; }
+    .food-desc { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 1.2rem; flex: 1; }
+    .food-action {
+      color: var(--greek-blue); font-weight: 700; font-size: 0.88rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--border-color); padding-top: 0.8rem;
+    }
+
+    /* 모달 팝업 */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
+      z-index: 1000; padding: 1rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 20px; max-width: 540px; width: 100%;
+      overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25); animation: popUp 0.25s ease-out;
+    }
+    @keyframes popUp { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-top {
+      height: 210px; background: linear-gradient(135deg, var(--greek-dark), var(--greek-blue));
+      position: relative; display: flex; align-items: center; justify-content: center;
+    }
+    .modal-top img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-close {
+      position: absolute; top: 14px; right: 14px; background: rgba(0, 0, 0, 0.5);
+      color: #fff; border: none; width: 34px; height: 34px; border-radius: 50%; font-size: 1.1rem; cursor: pointer;
+    }
+    .modal-content { padding: 1.8rem; }
+    .modal-content h3 { font-size: 1.5rem; font-weight: 800; }
+    .modal-greek-sub { color: var(--greek-blue); font-weight: 700; font-size: 0.95rem; margin-bottom: 1rem; }
+    .modal-story { font-size: 0.96rem; color: var(--text-main); margin-bottom: 1.4rem; line-height: 1.65; }
+    .modal-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .btn-docent, .btn-order {
+      padding: 0.8rem; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none;
+    }
+    .btn-docent { background: var(--greek-blue); color: #fff; }
+    .btn-order { background: var(--greek-light); color: var(--greek-blue); border: 1.5px solid var(--greek-blue); }
+    .order-bubble {
+      margin-top: 1rem; background: #FFFBEB; border: 1.5px solid var(--olive-gold);
+      border-radius: 12px; padding: 0.9rem 1rem; display: none;
+    }
+    .order-bubble.show { display: block; }
+
+    /* 섹션 4: 미니게임 (올림포스 신전 테트리스 + 실시간 랭킹) */
+    .game-container {
+      background: linear-gradient(145deg, #06284C, #0B3E75);
+      color: #fff; border-radius: 22px; padding: 2.2rem;
+      display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 2.2rem;
+      border: 2px solid var(--olive-gold);
+      box-shadow: 0 16px 36px rgba(8, 59, 112, 0.25);
+    }
+
+    .temple-frame {
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .temple-roof {
+      width: 256px; height: 26px;
+      background: linear-gradient(180deg, #F8FAFC, #CBD5E1);
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      border-bottom: 3px solid var(--olive-gold);
+    }
+    #tetris-canvas {
+      background: #041930;
+      border-left: 8px solid #E2E8F0;
+      border-right: 8px solid #E2E8F0;
+      border-bottom: 8px solid #CBD5E1;
+      display: block;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+    }
+
+    .game-info { width: 260px; }
+    .game-info h3 { font-size: 1.35rem; margin-bottom: 0.4rem; color: #fff; }
+    .score-box {
+      background: rgba(255, 255, 255, 0.1); padding: 0.9rem 1rem;
+      border-radius: 12px; margin: 0.9rem 0; font-size: 1.15rem;
+      font-weight: 800; color: #FDE68A; border: 1px solid rgba(197, 160, 89, 0.4);
+    }
+    .game-btn {
+      background: var(--olive-gold); color: #fff; border: none;
+      padding: 0.75rem 1.2rem; border-radius: 10px; font-weight: 700;
+      font-size: 0.95rem; cursor: pointer; width: 100%; margin-bottom: 0.7rem;
+      transition: filter 0.2s;
+    }
+    .game-btn:hover { filter: brightness(1.08); }
+
+    .rank-submit-box {
+      background: rgba(255, 255, 255, 0.12); padding: 0.9rem;
+      border-radius: 12px; margin-bottom: 0.8rem; display: none;
+      border: 1px solid #FDE68A;
+    }
+    .rank-submit-box.show { display: block; }
+    .rank-submit-box input {
+      width: 100%; padding: 0.55rem 0.75rem; border-radius: 8px;
+      border: none; margin: 0.45rem 0; font-size: 0.88rem;
+    }
+    .rank-submit-box button {
+      width: 100%; background: #10B981; color: #fff; border: none;
+      padding: 0.55rem; border-radius: 8px; font-weight: 700; cursor: pointer;
+    }
+
+    .mobile-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-top: 0.8rem; }
+    .mobile-controls button {
+      background: rgba(255, 255, 255, 0.15); color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3); padding: 0.6rem;
+      border-radius: 8px; font-weight: 700; cursor: pointer;
+    }
+
+    /* 실시간 명예의 전당 보드 */
+    .leaderboard-box {
+      width: 270px; background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px; padding: 1.3rem;
+    }
+    .leaderboard-box h4 {
+      font-size: 1.08rem; color: #FDE68A; margin-bottom: 0.3rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .leaderboard-sub { font-size: 0.78rem; opacity: 0.75; margin-bottom: 1rem; }
+    .rank-list { display: flex; flex-direction: column; gap: 0.55rem; }
+    .rank-row {
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(4, 25, 48, 0.65); padding: 0.6rem 0.85rem;
+      border-radius: 10px; font-size: 0.88rem;
+    }
+    .rank-row.top1 { border: 1px solid #F59E0B; background: rgba(245, 158, 11, 0.18); }
+    .rank-name { font-weight: 700; display: flex; align-items: center; gap: 0.4rem; }
+    .rank-score { font-weight: 800; color: #FDE68A; }
+
+    /* 섹션 5: 실시간 투표 & 방명록 */
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: #DCFCE7; color: #166534; font-size: 0.78rem; font-weight: 700;
+      padding: 0.25rem 0.7rem; border-radius: 999px; margin-left: 0.5rem; vertical-align: middle;
+    }
+    .live-dot { width: 8px; height: 8px; background: #16A34A; border-radius: 50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .interactive-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+    .panel-box {
+      background: #fff; border: 1px solid var(--border-color); border-radius: 18px;
+      padding: 1.8rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    }
+    .panel-box h3 { font-size: 1.25rem; margin-bottom: 0.4rem; color: var(--greek-dark); }
+    .panel-sub { font-size: 0.88rem; color: var(--text-sub); margin-bottom: 1.3rem; }
+
+    .poll-item { margin-bottom: 0.85rem; cursor: pointer; padding: 0.35rem; border-radius: 8px; transition: background 0.15s; }
+    .poll-item:hover { background: var(--greek-light); }
+    .poll-label-row { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .poll-bar-bg { background: var(--bg-gray); height: 12px; border-radius: 999px; overflow: hidden; border: 1px solid var(--border-color); }
+    .poll-bar-fill { background: var(--greek-blue); height: 100%; width: 0%; transition: width 0.5s ease; }
+    .poll-hint { font-size: 0.8rem; color: var(--greek-blue); margin-top: 0.8rem; font-weight: 600; }
+
+    .guestbook-form { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.2rem; }
+    .guestbook-form input, .guestbook-form textarea {
+      width: 100%; padding: 0.7rem 0.9rem; border: 1px solid var(--border-color); border-radius: 10px; font-size: 0.9rem;
+    }
+    .guestbook-form button {
+      background: var(--greek-blue); color: #fff; border: none; padding: 0.75rem;
+      border-radius: 10px; font-weight: 700; cursor: pointer;
+    }
+    .guestbook-list { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem; }
+    .gb-card {
+      background: var(--bg-gray); padding: 0.8rem 1rem; border-radius: 10px;
+      font-size: 0.88rem; border-left: 3px solid var(--greek-blue);
+    }
+    .gb-card strong { color: var(--greek-blue); display: block; margin-bottom: 0.2rem; }
+
+    /* 푸터 */
+    footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 5%; text-align: center; }
+    footer h3 { color: #fff; font-size: 1.2rem; margin-bottom: 1.2rem; }
+    .tech-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.7rem; margin-bottom: 1.5rem; }
+    .tech-badge {
+      background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.45rem 1rem; border-radius: 999px; font-size: 0.85rem; color: #fff;
+    }
+
+    /* 토스트 알림 */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #1E293B; color: #fff; padding: 0.75rem 1.4rem;
+      border-radius: 999px; font-size: 0.88rem; font-weight: 600;
+      z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <audio id="bgm-audio" src="bgm.mp3" loop></audio>
+  <audio id="voice-audio"></audio>
+
+  <header>
+    <div class="logo">🇬🇷 TASTE OF HELLAS <span>그리스 미식 전시관</span></div>
+    <nav>
+      <a href="#intro">전시관 소개</a>
+      <a href="#gallery">미식 6선</a>
+      <a href="#minigame">미니게임</a>
+      <a href="#community">투표·방명록</a>
+      <a href="#tech">제작 노트</a>
+    </nav>
+    <button class="bgm-btn" id="bgm-toggle" onclick="toggleBGM()">🎵 지중해 BGM 재생</button>
+  </header>
+
+  <div class="hero">
+    <div class="hero-badge">한국외국어대학교 그리스 전공 기말 프로젝트</div>
+    <h1>언어와 역사를 맛보다,<br>그리스 온라인 미식 전시관</h1>
+    <p>지중해의 태양과 올리브가 빚어낸 6가지 대표 그리스 요리와 현지 타베르나(Taverna) 문화를 오감으로 체험해 보세요.</p>
+    <a href="#gallery" class="hero-cta">전시관 관람 시작하기 ↓</a>
+  </div>
+
+  <section id="intro">
+    <div class="section-header">
+      <span class="section-tag">ABOUT EXHIBITION</span>
+      <h2>왜 '그리스 음식'인가요?</h2>
+      <p>한 나라의 언어와 역사를 가장 친숙하게 만나는 창구, 그리스 식문화의 3가지 매력</p>
+    </div>
+    <div class="intro-grid">
+      <div class="intro-card">
+        <div class="intro-icon">🫒</div>
+        <h3>지중해 식단의 원형</h3>
+        <p>신선한 올리브오일, 토마토, 허브, 페타 치즈를 중심으로 한 세계적인 건강 장수 식단입니다.</p>
+      </div>
+      <div class="intro-card">
+        <div class="intro-icon">🏛️</div>
+        <h3>신화와 역사가 깃든 레시피</h3>
+        <p>고대 아테네의 연회부터 비잔틴 제국을 거쳐 이어진 수천 년의 이야기가 음식 이름에 살아있습니다.</p>
+      </div>
+      <div class="intro-card">
+        <div class="intro-icon">🥂</div>
+        <h3>함께 나누는 타베르나 문화</h3>
+        <p>그리스 전통 식당 '타베르나'에서는 여러 요리를 가운데 두고 함께 나누며 대화를 즐깁니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gallery-bg" id="gallery">
+    <section class="gallery-inner">
+      <div class="section-header">
+        <span class="section-tag">CURATED GALLERY</span>
+        <h2>그리스 대표 미식 6선</h2>
+        <p>카드를 클릭하면 상세 스토리와 <strong>오디오 도슨트 해설</strong>, <strong>현지어 주문법</strong>을 확인할 수 있습니다.</p>
+      </div>
+      <div class="food-grid" id="food-grid"></div>
+    </section>
+  </div>
+
+  <!-- 섹션 4: 올림포스 신전 벽돌 테트리스 & 실시간 랭킹 -->
+  <section id="minigame">
+    <div class="section-header">
+      <span class="section-tag">MINI GAME ZONE</span>
+      <h2>올림포스 신전 벽돌 쌓기 <span class="live-badge"><span class="live-dot"></span>실시간 Top 5 랭킹</span></h2>
+      <p>대리석과 테라코타 신전 벽돌을 빈틈없이 쌓아 파르테논 신전 명예의 전당 1위에 도전하세요!</p>
+    </div>
+    <div class="game-container">
+      <!-- 신전 기둥 프레임 + 캔버스 -->
+      <div class="temple-frame">
+        <div class="temple-roof"></div>
+        <canvas id="tetris-canvas" width="240" height="400"></canvas>
+      </div>
+
+      <!-- 중앙 컨트롤 & 점수 등록 -->
+      <div class="game-info">
+        <h3>🏛️ Parthenon Brick</h3>
+        <p style="font-size: 0.88rem; opacity: 0.85;">신전 석재 벽돌을 가로로 채우면 100점이 올라갑니다.</p>
+        <div class="score-box">현재 점수: <span id="tetris-score">0</span>점</div>
+
+        <!-- 게임 종료 후 랭킹 등록 폼 -->
+        <div class="rank-submit-box" id="rank-submit-box">
+          <div style="font-size: 0.85rem; font-weight: 700; color: #FDE68A;">🎉 신전 건축 완료! 랭킹에 등록하세요</div>
+          <input type="text" id="rank-name" placeholder="닉네임 입력 (예: 아테네건축가)" maxlength="12" />
+          <button onclick="submitRank()">🏆 실시간 랭킹 등록하기</button>
+        </div>
+
+        <button class="game-btn" onclick="startTetris()">게임 시작 / 다시하기</button>
+        <div style="font-size: 0.8rem; opacity: 0.78;">
+          • 이동: ← / → &nbsp;|&nbsp; 회전: ↑<br>
+          • 빠르게 내리기: ↓ &nbsp;|&nbsp; 즉시 낙하: Space
+        </div>
+        <div class="mobile-controls">
+          <button onclick="movePiece(-1)">◀</button>
+          <button onclick="rotatePiece()">↻</button>
+          <button onclick="dropPiece()">▼</button>
+          <button onclick="movePiece(1)">▶</button>
+        </div>
+      </div>
+
+      <!-- 우측: 실시간 Top 5 랭킹 보드 -->
+      <div class="leaderboard-box">
+        <h4>🏆 실시간 신전 랭킹 <span>TOP 5</span></h4>
+        <div class="leaderboard-sub">구글 스프레드시트 실시간 동기화</div>
+        <div class="rank-list" id="rank-list">
+          <div class="rank-row"><span>랭킹 불러오는 중...</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 섹션 5: 실시간 투표 & 방명록 -->
+  <section id="community">
+    <div class="section-header">
+      <span class="section-tag">LIVE INTERACTION</span>
+      <h2>실시간 미식 투표 & 관람 방명록 <span class="live-badge"><span class="live-dot"></span>Google Sheets 연동 중</span></h2>
+      <p>가장 먹어보고 싶은 그리스 음식에 투표하고, 전시관 관람 소감을 남겨주세요!</p>
+    </div>
+    <div class="interactive-grid">
+      <div class="panel-box">
+        <h3>📊 최애 그리스 음식 인기투표</h3>
+        <p class="panel-sub">원하는 음식 막대를 클릭하면 구글 시트에 실시간 집계됩니다.</p>
+        <div id="poll-container"></div>
+        <div class="poll-hint">💡 막대를 클릭해서 직접 투표해 보세요! (5초마다 자동 동기화)</div>
+      </div>
+
+      <div class="panel-box">
+        <h3>✍️ 온라인 전시관 방명록</h3>
+        <p class="panel-sub">학우들과 교수님의 한마디를 남겨주세요.</p>
+        <form class="guestbook-form" onsubmit="addGuestbook(event)">
+          <input type="text" id="gb-name" placeholder="이름 또는 닉네임 (예: 그리스학과 22학번)" required />
+          <textarea id="gb-msg" rows="2" placeholder="가장 먹어보고 싶은 음식이나 감상평을 적어주세요!" required></textarea>
+          <button type="submit" id="gb-submit-btn">방명록 등록하기</button>
+        </form>
+        <div class="guestbook-list" id="guestbook-list">
+          <div class="gb-card"><span>구글 시트에서 방명록을 불러오는 중입니다...</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="tech">
+    <h3>🛠️ Project Architecture & Tech Stack</h3>
+    <div class="tech-badges">
+      <span class="tech-badge">1. Antigravity AI (웹 UI & 전시관·게임 구현)</span>
+      <span class="tech-badge">2. Suno AI (지중해 부주키 BGM 작곡)</span>
+      <span class="tech-badge">3. Naver Clova Dubbing (오디오 도슨트 나레이션)</span>
+      <span class="tech-badge">4. Google Apps Script (실시간 투표·랭킹·방명록 DB)</span>
+      <span class="tech-badge">5. GitHub & Netlify (웹 퍼블리싱)</span>
+    </div>
+    <p style="font-size: 0.85rem; opacity: 0.7;">© 2026 Taste of Hellas. 한국외국어대학교 그리스 전공 기말 프로젝트.</p>
+  </footer>
+
+  <!-- 상세 도슨트 모달 -->
+  <div class="modal-overlay" id="food-modal" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-top" id="modal-top">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-content">
+        <h3 id="modal-title">음식 이름</h3>
+        <div class="modal-greek-sub" id="modal-greek">그리스어 표기</div>
+        <p class="modal-story" id="modal-story">상세 설명</p>
+        <div class="modal-buttons">
+          <button class="btn-docent" onclick="playDocent()">🔊 도슨트 음성 듣기</button>
+          <button class="btn-order" onclick="toggleOrder()">🗣️ 그리스어로 주문하기</button>
+        </div>
+        <div class="order-bubble" id="order-bubble">
+          <div style="font-size: 0.8rem; color: #92400E; font-weight: 700;">🇬🇷 현지 타베르나 실전 주문 표현</div>
+          <div id="order-greek" style="font-size: 1.05rem; font-weight: 800; margin: 0.2rem 0;"></div>
+          <div id="order-pron" style="font-size: 0.9rem; color: #0D5EAF; font-weight: 700;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">알림 메시지</div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwA7o4499XI11nk9vk1XFPxSC4N8Jxd2V8V76NNtY7wXeHOt2DtrL7pTKtEGucZ_6A2/exec";
+
+    const foods = [
+      {
+        id: 1, name: "수블라키", greek: "Σουβλάκι (Souvlaki)", badge: "그리스 소울푸드", emoji: "🍢",
+        img: "food1.jpg", voice: "voice1.mp3",
+        shortDesc: "숯불에 구운 고기 꼬치를 피타 빵과 차지키 소스에 싸 먹는 대표 길거리 음식",
+        story: "고대 그리스 시대부터 이어진 유서 깊은 꼬치 요리입니다. 잘 구운 돼지고기나 닭고기에 상큼한 요거트 오이 소스인 '차지키(Tzatziki)', 토마토, 양파를 따뜻한 피타(Pita) 빵에 돌돌 말아 먹는 그리스인의 가장 대중적인 한 끼입니다.",
+        orderGreek: "Ένα σουβλάκι, παρακαλώ!", orderPron: "에나 수블라키, 파라칼로! (수블라키 하나 주세요!)"
+      },
+      {
+        id: 2, name: "무사카", greek: "Μουσακάς (Moussaka)", badge: "전통 오븐 가정식", emoji: "🥘",
+        img: "food2.jpg", voice: "voice2.mp3",
+        shortDesc: "구운 가지와 다진 고기 위에 부드러운 베샤멜 크림 소스를 얹어 구운 요리",
+        story: "그리스 어머니의 손맛을 상징하는 대표 가정식입니다. 올리브오일에 구운 가지와 감자, 향신료로 볶은 다진 고기를 층층이 쌓은 뒤, 맨 위에 고소한 베샤멜 소스를 두툼하게 올려 오븐에서 노릇하게 구워냅니다.",
+        orderGreek: "Έναν μουσακά, παρακαλώ!", orderPron: "에난 무사카, 파라칼로! (무사카 하나 주세요!)"
+      },
+      {
+        id: 3, name: "그릭 샐러드 (호리아티키)", greek: "Χωριάτικη Σαλάτα (Horiatiki)", badge: "지중해 정통 샐러드", emoji: "🥗",
+        img: "food3.jpg", voice: "voice3.mp3",
+        shortDesc: "양상추 없이 큼직한 토마토와 통 페타 치즈를 올리브오일과 즐기는 샐러드",
+        story: "그리스 현지에서는 '시골풍 샐러드'라는 뜻의 '호리아티키(Horiatiki)'로 불립니다. 한국과 달리 양상추가 전혀 들어가지 않으며, 큼직하게 썬 토마토, 오이, 칼라마타 올리브 위에 두툼한 페타 치즈 한 덩이를 통째로 얹어 오레가노와 올리브오일을 뿌려 먹습니다.",
+        orderGreek: "Μία χωριάτικη σαλάτα, παρακαλώ!", orderPron: "미아 호리아티키 살라타, 파라칼로! (그릭 샐러드 하나 주세요!)"
+      },
+      {
+        id: 4, name: "스파나코피타", greek: "Σπανακόπιτα (Spanakopita)", badge: "바삭한 전통 파이", emoji: "🥧",
+        img: "food4.jpg", voice: "voice4.mp3",
+        shortDesc: "종이처럼 얇은 필로 반죽 속에 시금치와 페타 치즈를 채워 구운 파이",
+        story: "바삭바삭하게 부서지는 얇은 페이스트리 '필로(Phyllo)' 반죽 겹겹이 신선한 시금치와 짭짤한 페타 치즈, 딜(허브)을 채워 구운 그리스식 파이입니다. 아침 식사나 출출할 때 길거리 베이커리에서 가장 인기 있는 메뉴입니다.",
+        orderGreek: "Μία σπανακόπιτα, παρακαλώ!", orderPron: "미아 스파나코피타, 파라칼로! (스파나코피타 하나 주세요!)"
+      },
+      {
+        id: 5, name: "그릭 요거트 & 꿀", greek: "Γιαούρτι με μέλι (Yaourti me meli)", badge: "그리스 장수 디저트", emoji: "🍯",
+        img: "food5.jpg", voice: "voice5.mp3",
+        shortDesc: "유청을 제거해 꾸덕한 정통 요거트에 지중해 백리향 꿀과 호두를 곁들인 디저트",
+        story: "유청을 걸러내어 크림치즈처럼 진하고 꾸덕한 정통 그리스 요거트 위에, 향긋한 지중해산 타임(백리향) 꿀과 고소한 호두를 듬뿍 얹어 먹는 그리스인들의 오랜 건강 디저트이자 아침 식사입니다.",
+        orderGreek: "Ένα γιαούρτι με μέλι, παρακαλώ!", orderPron: "에나 야우르티 메 멜리, 파라칼로! (꿀 올린 그릭 요거트 하나 주세요!)"
+      },
+      {
+        id: 6, name: "프레도 에스프레소", greek: "Φρέντο Εσπρέσο (Freddo Espresso)", badge: "그리스 카페 문화", emoji: "🧋",
+        img: "food6.jpg", voice: "voice6.mp3",
+        shortDesc: "에스프레소를 얼음과 함께 갈아 풍성한 크레마 거품을 낸 그리스식 아이스 커피",
+        story: "그리스는 아이스 커피 문화가 유독 발달한 나라입니다. 갓 추출한 진한 에스프레소 샷을 얼음과 함께 전용 믹서로 휘핑해 차갑고 쫀득한 거품을 만든 커피로, 식사 후 테라스에 앉아 몇 시간씩 대화를 나누는 그리스 일상의 상징입니다.",
+        orderGreek: "Έναν φρέντο εσπρέσο μέτριο, παρακαλώ!", orderPron: "에난 프레도 에스프레소 메트리오, 파라칼로! (프레도 에스프레소 적당히 달게 주세요!)"
+      }
+    ];
+
+    let currentFood = null;
+    let votes = [0, 0, 0, 0, 0, 0];
+    let guestbooks = [];
+    let rankings = [];
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function escapeHTML(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function renderGallery() {
+      const grid = document.getElementById("food-grid");
+      grid.innerHTML = foods.map(f => `
+        <div class="food-card" onclick="openModal(${f.id})">
+          <div class="food-thumb">
+            <span class="food-badge">${f.badge}</span>
+            <img src="${f.img}" alt="${f.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div class="img-fallback" style="display:none;">
+              <div class="emoji">${f.emoji}</div>
+              <div class="file-hint">${f.img}</div>
+            </div>
+          </div>
+          <div class="food-body">
+            <div class="food-title">${f.name}</div>
+            <div class="food-greek">${f.greek}</div>
+            <p class="food-desc">${f.shortDesc}</p>
+            <div class="food-action">
+              <span>도슨트 해설 & 주문법 보기</span>
+              <span>→</span>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function openModal(id) {
+      currentFood = foods.find(f => f.id === id);
+      if (!currentFood) return;
+      const modalTop = document.getElementById("modal-top");
+      modalTop.innerHTML = `
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <img src="${currentFood.img}" alt="${currentFood.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="img-fallback" style="display:none;">
+          <div class="emoji">${currentFood.emoji}</div>
+          <div class="file-hint">${currentFood.img}</div>
+        </div>
+      `;
+      document.getElementById("modal-title").textContent = currentFood.name;
+      document.getElementById("modal-greek").textContent = currentFood.greek;
+      document.getElementById("modal-story").textContent = currentFood.story;
+      document.getElementById("order-greek").textContent = currentFood.orderGreek;
+      document.getElementById("order-pron").textContent = currentFood.orderPron;
+      document.getElementById("order-bubble").classList.remove("show");
+      document.getElementById("food-modal").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("food-modal").classList.remove("active");
+      const voiceAudio = document.getElementById("voice-audio");
+      voiceAudio.pause();
+      voiceAudio.currentTime = 0;
+    }
+
+    function playDocent() {
+      if (!currentFood) return;
+      const voiceAudio = document.getElementById("voice-audio");
+      voiceAudio.src = currentFood.voice;
+      voiceAudio.play()
+        .then(() => showToast(`🔊 ${currentFood.name} 도슨트 해설 재생 중...`))
+        .catch(() => showToast(`💡 '${currentFood.voice}' 파일을 찾을 수 없습니다.`));
+    }
+
+    function toggleOrder() {
+      document.getElementById("order-bubble").classList.toggle("show");
+    }
+
+    function toggleBGM() {
+      const bgm = document.getElementById("bgm-audio");
+      const btn = document.getElementById("bgm-toggle");
+      if (bgm.paused) {
+        bgm.play()
+          .then(() => {
+            btn.classList.add("playing");
+            btn.textContent = "⏸️ 지중해 BGM 일시정지";
+            showToast("🎵 지중해 배경음악이 재생됩니다.");
+          })
+          .catch(() => showToast("💡 'bgm.mp3' 파일을 찾을 수 없습니다."));
+      } else {
+        bgm.pause();
+        btn.classList.remove("playing");
+        btn.textContent = "🎵 지중해 BGM 재생";
+      }
+    }
+
+    // 구글 스프레드시트 실시간 데이터 조회 (투표 + 방명록 + 랭킹)
+    async function fetchSheetData() {
+      try {
+        const res = await fetch(SCRIPT_URL);
+        const data = await res.json();
+        if (data.votes) {
+          votes = data.votes.map(v => Number(v) || 0);
+          renderPoll();
+        }
+        if (data.guestbooks) {
+          guestbooks = data.guestbooks;
+          renderGuestbook();
+        }
+        if (data.rankings) {
+          rankings = data.rankings;
+          renderLeaderboard();
+        }
+      } catch (err) {
+        console.error("데이터 로드 실패:", err);
+      }
+    }
+
+    function renderPoll() {
+      const total = votes.reduce((a, b) => a + b, 0);
+      const container = document.getElementById("poll-container");
+      container.innerHTML = foods.map((f, idx) => {
+        const pct = total === 0 ? 0 : Math.round((votes[idx] / total) * 100);
+        return `
+          <div class="poll-item" onclick="castVote(${idx})">
+            <div class="poll-label-row">
+              <span>${f.emoji} ${f.name}</span>
+              <span>${votes[idx]}표 (${pct}%)</span>
+            </div>
+            <div class="poll-bar-bg">
+              <div class="poll-bar-fill" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function castVote(idx) {
+      votes[idx]++;
+      renderPoll();
+      showToast(`✅ '${foods[idx].name}'에 투표했습니다!`);
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({ type: "vote", index: idx })
+        });
+      } catch (err) { console.error(err); }
+    }
+
+    function renderGuestbook() {
+      const list = document.getElementById("guestbook-list");
+      if (guestbooks.length === 0) {
+        list.innerHTML = `<div class="gb-card"><span>아직 등록된 방명록이 없습니다. 첫 번째 소감을 남겨주세요!</span></div>`;
+        return;
+      }
+      list.innerHTML = guestbooks.map(g => `
+        <div class="gb-card">
+          <strong>${escapeHTML(g.name)}</strong>
+          <span>${escapeHTML(g.msg)}</span>
+        </div>
+      `).join("");
+    }
+
+    async function addGuestbook(e) {
+      e.preventDefault();
+      const nameInput = document.getElementById("gb-name");
+      const msgInput = document.getElementById("gb-msg");
+      const btn = document.getElementById("gb-submit-btn");
+      const name = nameInput.value.trim();
+      const msg = msgInput.value.trim();
+      if (!name || !msg) return;
+
+      guestbooks.unshift({ name, msg });
+      renderGuestbook();
+      nameInput.value = "";
+      msgInput.value = "";
+      btn.disabled = true;
+      btn.textContent = "저장 중...";
+      showToast("✍️ 방명록이 구글 시트에 등록되었습니다!");
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({ type: "guestbook", name, msg })
+        });
+      } catch (err) { console.error(err); }
+      finally {
+        btn.disabled = false;
+        btn.textContent = "방명록 등록하기";
+      }
+    }
+
+    // 실시간 랭킹 보드 렌더링
+    function renderLeaderboard() {
+      const list = document.getElementById("rank-list");
+      if (!rankings || rankings.length === 0) {
+        list.innerHTML = `<div class="rank-row"><span>아직 기록이 없습니다. 첫 1위에 도전하세요!</span></div>`;
+        return;
+      }
+      const medals = ["🥇", "🥈", "🥉", "4위", "5위"];
+      list.innerHTML = rankings.map((r, i) => `
+        <div class="rank-row ${i === 0 ? 'top1' : ''}">
+          <span class="rank-name">${medals[i] || (i + 1) + '위'} ${escapeHTML(r.name)}</span>
+          <span class="rank-score">${r.score}점</span>
+        </div>
+      `).join("");
+    }
+
+    // 테트리스 점수 구글 시트 등록
+    async function submitRank() {
+      const nameInput = document.getElementById("rank-name");
+      const name = nameInput.value.trim();
+      if (!name) {
+        showToast("닉네임을 입력해 주세요!");
+        return;
+      }
+      rankings.push({ name, score });
+      rankings.sort((a, b) => b.score - a.score);
+      rankings = rankings.slice(0, 5);
+      renderLeaderboard();
+
+      document.getElementById("rank-submit-box").classList.remove("show");
+      nameInput.value = "";
+      showToast(`🏆 '${name}'님의 ${score}점이 랭킹에 등록되었습니다!`);
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({ type: "rank", name, score })
+        });
+      } catch (err) { console.error(err); }
+    }
+
+    // 그리스 신전 벽돌 테트리스
+    const canvas = document.getElementById("tetris-canvas");
+    const ctx = canvas.getContext("2d");
+    const ROWS = 20, COLS = 12, BLOCK = 20;
+
+    const BRICK_STYLES = [
+      null,
+      { main: "#E2E8F0", light: "#FFFFFF", dark: "#94A3B8" }, // 1: 파로스 백대리석
+      { main: "#D4AF37", light: "#FDE68A", dark: "#92400E" }, // 2: 올림포스 황금 벽돌
+      { main: "#C26D53", light: "#E69A83", dark: "#7C2D12" }, // 3: 고대 테라코타 점토 벽돌
+      { main: "#1D63B8", light: "#60A5FA", dark: "#1E3A8A" }, // 4: 에게해 청금석 타일
+      { main: "#CBD5E1", light: "#F1F5F9", dark: "#64748B" }, // 5: 펜텔리콘 회대리석
+      { main: "#B48A4E", light: "#E5C697", dark: "#6B4C23" }, // 6: 사암 석회석 블록
+      { main: "#2E8B57", light: "#6EE7B7", dark: "#064E3B" }  // 7: 올리브 청동 석판
+    ];
+
+    const SHAPES = [
+      [],
+      [[1, 1, 1, 1]],
+      [[2, 2], [2, 2]],
+      [[0, 3, 0], [3, 3, 3]],
+      [[4, 0, 0], [4, 4, 4]],
+      [[0, 0, 5], [5, 5, 5]],
+      [[0, 6, 6], [6, 6, 0]],
+      [[7, 7, 0], [0, 7, 7]]
+    ];
+
+    let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    let piece = null, score = 0, gameLoop = null;
+
+    function drawBoard() {
+      ctx.fillStyle = "#041930";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
+      ctx.lineWidth = 1;
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          ctx.strokeRect(c * BLOCK, r * BLOCK, BLOCK, BLOCK);
+          if (board[r][c]) drawBrick(c, r, board[r][c]);
+        }
+      }
+      if (piece) {
+        piece.shape.forEach((row, r) => {
+          row.forEach((val, c) => {
+            if (val) drawBrick(piece.x + c, piece.y + r, val);
+          });
+        });
+      }
+    }
+
+    function drawBrick(x, y, styleId) {
+      const style = BRICK_STYLES[styleId];
+      const px = x * BLOCK;
+      const py = y * BLOCK;
+
+      ctx.fillStyle = style.main;
+      ctx.fillRect(px, py, BLOCK, BLOCK);
+
+      ctx.fillStyle = style.light;
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(px + BLOCK, py);
+      ctx.lineTo(px + BLOCK - 3, py + 3);
+      ctx.lineTo(px + 3, py + 3);
+      ctx.lineTo(px + 3, py + BLOCK - 3);
+      ctx.lineTo(px, py + BLOCK);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = style.dark;
+      ctx.beginPath();
+      ctx.moveTo(px + BLOCK, py + BLOCK);
+      ctx.lineTo(px, py + BLOCK);
+      ctx.lineTo(px + 3, py + BLOCK - 3);
+      ctx.lineTo(px + BLOCK - 3, py + BLOCK - 3);
+      ctx.lineTo(px + BLOCK - 3, py + 3);
+      ctx.lineTo(px + BLOCK, py);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = style.dark;
+      ctx.lineWidth = 0.8;
+      ctx.strokeRect(px + 3.5, py + 3.5, BLOCK - 7, BLOCK - 7);
+    }
+
+    function spawnPiece() {
+      const id = Math.floor(Math.random() * 7) + 1;
+      piece = { shape: SHAPES[id], x: 4, y: 0 };
+      if (collide()) {
+        clearInterval(gameLoop);
+        gameLoop = null;
+        showToast(`🏛️ 신전 건축 종료! 최종 점수: ${score}점`);
+        document.getElementById("rank-submit-box").classList.add("show");
+      }
+    }
+
+    function collide(px = piece.x, py = piece.y, pshape = piece.shape) {
+      for (let r = 0; r < pshape.length; r++) {
+        for (let c = 0; c < pshape[r].length; c++) {
+          if (!pshape[r][c]) continue;
+          let nx = px + c, ny = py + r;
+          if (nx < 0 || nx >= COLS || ny >= ROWS || (ny >= 0 && board[ny][nx])) return true;
+        }
+      }
+      return false;
+    }
+
+    function mergePiece() {
+      piece.shape.forEach((row, r) => {
+        row.forEach((val, c) => {
+          if (val && piece.y + r >= 0) board[piece.y + r][piece.x + c] = val;
+        });
+      });
+      for (let r = ROWS - 1; r >= 0; r--) {
+        if (board[r].every(v => v !== 0)) {
+          board.splice(r, 1);
+          board.unshift(Array(COLS).fill(0));
+          score += 100;
+          document.getElementById("tetris-score").textContent = score;
+          r++;
+        }
+      }
+    }
+
+    function movePiece(dir) {
+      if (!piece || !gameLoop) return;
+      if (!collide(piece.x + dir, piece.y)) {
+        piece.x += dir;
+        drawBoard();
+      }
+    }
+
+    function rotatePiece() {
+      if (!piece || !gameLoop) return;
+      const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
+      if (!collide(piece.x, piece.y, rotated)) {
+        piece.shape = rotated;
+        drawBoard();
+      }
+    }
+
+    function dropPiece() {
+      if (!piece || !gameLoop) return;
+      if (!collide(piece.x, piece.y + 1)) {
+        piece.y++;
+      } else {
+        mergePiece();
+        spawnPiece();
+      }
+      drawBoard();
+    }
+
+    function startTetris() {
+      board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+      score = 0;
+      document.getElementById("tetris-score").textContent = score;
+      document.getElementById("rank-submit-box").classList.remove("show");
+      spawnPiece();
+      if (gameLoop) clearInterval(gameLoop);
+      gameLoop = setInterval(dropPiece, 550);
+      drawBoard();
+    }
+
+    document.addEventListener("keydown", e => {
+      if (!gameLoop) return;
+      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "].includes(e.key)) e.preventDefault();
+      if (e.key === "ArrowLeft") movePiece(-1);
+      if (e.key === "ArrowRight") movePiece(1);
+      if (e.key === "ArrowUp") rotatePiece();
+      if (e.key === "ArrowDown") dropPiece();
+      if (e.key === " ") {
+        while (!collide(piece.x, piece.y + 1)) piece.y++;
+        dropPiece();
+      }
+    });
+
+    // 초기 실행
+    renderGallery();
+    renderPoll();
+    renderLeaderboard();
+    drawBoard();
+    fetchSheetData();
+    setInterval(fetchSheetData, 5000);
+  </script>
+</body>
+</html>
