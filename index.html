@@ -61,7 +61,7 @@
     /* 히어로 섹션 */
     .hero {
       background: linear-gradient(135deg, var(--greek-dark) 0%, var(--greek-blue) 65%, #2B7FD4 100%);
-      color: #fff; text-align: center; padding: 5.5rem 5% 5rem;
+      color: #fff; text-align: center; padding: 5rem 5% 6.5rem;
     }
     .hero-badge {
       display: inline-block; background: rgba(255, 255, 255, 0.15);
@@ -77,6 +77,49 @@
       text-decoration: none; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); transition: transform 0.2s;
     }
     .hero-cta:hover { transform: translateY(-2px); }
+
+    /* 전시관 입구 QR 티켓 배너 (히어로 하단에 걸치는 입구 디자인) */
+    .entrance-qr-wrap {
+      max-width: 960px;
+      margin: -3.6rem auto 0;
+      padding: 0 5%;
+      position: relative;
+      z-index: 10;
+    }
+    .qr-banner {
+      background: #FFFFFF;
+      border: 2px solid var(--greek-blue);
+      border-radius: 22px;
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      box-shadow: 0 14px 32px rgba(8, 59, 112, 0.14);
+    }
+    .qr-text { flex: 1; min-width: 240px; }
+    .qr-tag {
+      display: inline-block;
+      background: var(--greek-blue);
+      color: #fff;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 0.55rem;
+    }
+    .qr-text h3 { font-size: 1.35rem; color: var(--greek-dark); margin-bottom: 0.35rem; font-weight: 800; }
+    .qr-text p { font-size: 0.93rem; color: var(--text-sub); }
+    .qr-box {
+      background: var(--greek-light);
+      padding: 0.7rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--greek-blue);
+      text-align: center;
+    }
+    .qr-box img { width: 124px; height: 124px; display: block; border-radius: 6px; background: #fff; padding: 4px; }
+    .qr-box span { display: block; font-size: 0.74rem; font-weight: 800; color: var(--greek-blue); margin-top: 0.35rem; letter-spacing: 0.5px; }
 
     /* 공통 섹션 */
     section { padding: 4.5rem 5%; max-width: 1140px; margin: 0 auto; }
@@ -177,9 +220,7 @@
       box-shadow: 0 16px 36px rgba(8, 59, 112, 0.25);
     }
 
-    .temple-frame {
-      display: flex; flex-direction: column; align-items: center;
-    }
+    .temple-frame { display: flex; flex-direction: column; align-items: center; }
     .temple-roof {
       width: 256px; height: 26px;
       background: linear-gradient(180deg, #F8FAFC, #CBD5E1);
@@ -232,7 +273,6 @@
       border-radius: 8px; font-weight: 700; cursor: pointer;
     }
 
-    /* 실시간 명예의 전당 보드 */
     .leaderboard-box {
       width: 270px; background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.18);
@@ -328,6 +368,7 @@
     <button class="bgm-btn" id="bgm-toggle" onclick="toggleBGM()">🎵 지중해 BGM 재생</button>
   </header>
 
+  <!-- 섹션 1: 히어로 배너 -->
   <div class="hero">
     <div class="hero-badge">한국외국어대학교 그리스 전공 기말 프로젝트</div>
     <h1>언어와 역사를 맛보다,<br>그리스 온라인 미식 전시관</h1>
@@ -335,6 +376,22 @@
     <a href="#gallery" class="hero-cta">전시관 관람 시작하기 ↓</a>
   </div>
 
+  <!-- ✅ 전시관 입구 모바일 실시간 입장 QR 티켓 배너 -->
+  <div class="entrance-qr-wrap">
+    <div class="qr-banner">
+      <div class="qr-text">
+        <span class="qr-tag">🎟️ EXHIBITION ENTRANCE · 모바일 실시간 입장</span>
+        <h3>스마트폰 카메라로 QR코드를 스캔해 전시관에 입장하세요!</h3>
+        <p>별도 앱 설치 없이 카메라로 찍으면 내 휴대폰에서 <strong>오디오 도슨트, 신전 테트리스 랭킹, 실시간 투표 & 방명록</strong>을 바로 함께 즐길 수 있습니다.</p>
+      </div>
+      <div class="qr-box">
+        <img id="qr-img" src="" alt="전시관 입장 QR코드" />
+        <span>SCAN TO ENTER</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 섹션 2: 전시관 소개 -->
   <section id="intro">
     <div class="section-header">
       <span class="section-tag">ABOUT EXHIBITION</span>
@@ -360,6 +417,7 @@
     </div>
   </section>
 
+  <!-- 섹션 3: 그리스 미식 6선 -->
   <div class="gallery-bg" id="gallery">
     <section class="gallery-inner">
       <div class="section-header">
@@ -379,19 +437,16 @@
       <p>대리석과 테라코타 신전 벽돌을 빈틈없이 쌓아 파르테논 신전 명예의 전당 1위에 도전하세요!</p>
     </div>
     <div class="game-container">
-      <!-- 신전 기둥 프레임 + 캔버스 -->
       <div class="temple-frame">
         <div class="temple-roof"></div>
         <canvas id="tetris-canvas" width="240" height="400"></canvas>
       </div>
 
-      <!-- 중앙 컨트롤 & 점수 등록 -->
       <div class="game-info">
         <h3>🏛️ Parthenon Brick</h3>
         <p style="font-size: 0.88rem; opacity: 0.85;">신전 석재 벽돌을 가로로 채우면 100점이 올라갑니다.</p>
         <div class="score-box">현재 점수: <span id="tetris-score">0</span>점</div>
 
-        <!-- 게임 종료 후 랭킹 등록 폼 -->
         <div class="rank-submit-box" id="rank-submit-box">
           <div style="font-size: 0.85rem; font-weight: 700; color: #FDE68A;">🎉 신전 건축 완료! 랭킹에 등록하세요</div>
           <input type="text" id="rank-name" placeholder="닉네임 입력 (예: 아테네건축가)" maxlength="12" />
@@ -411,7 +466,6 @@
         </div>
       </div>
 
-      <!-- 우측: 실시간 Top 5 랭킹 보드 -->
       <div class="leaderboard-box">
         <h4>🏆 실시간 신전 랭킹 <span>TOP 5</span></h4>
         <div class="leaderboard-sub">구글 스프레드시트 실시간 동기화</div>
@@ -429,6 +483,7 @@
       <h2>실시간 미식 투표 & 관람 방명록 <span class="live-badge"><span class="live-dot"></span>Google Sheets 연동 중</span></h2>
       <p>가장 먹어보고 싶은 그리스 음식에 투표하고, 전시관 관람 소감을 남겨주세요!</p>
     </div>
+
     <div class="interactive-grid">
       <div class="panel-box">
         <h3>📊 최애 그리스 음식 인기투표</h3>
@@ -491,6 +546,13 @@
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwA7o4499XI11nk9vk1XFPxSC4N8Jxd2V8V76NNtY7wXeHOt2DtrL7pTKtEGucZ_6A2/exec";
+
+    // 현재 전시관 URL을 자동으로 읽어 QR코드 생성
+    function initQRCode() {
+      const currentUrl = encodeURIComponent(window.location.href);
+      const qrImg = document.getElementById("qr-img");
+      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=083B70&data=${currentUrl}`;
+    }
 
     const foods = [
       {
@@ -637,7 +699,6 @@
       }
     }
 
-    // 구글 스프레드시트 실시간 데이터 조회 (투표 + 방명록 + 랭킹)
     async function fetchSheetData() {
       try {
         const res = await fetch(SCRIPT_URL);
@@ -733,7 +794,6 @@
       }
     }
 
-    // 실시간 랭킹 보드 렌더링
     function renderLeaderboard() {
       const list = document.getElementById("rank-list");
       if (!rankings || rankings.length === 0) {
@@ -749,7 +809,6 @@
       `).join("");
     }
 
-    // 테트리스 점수 구글 시트 등록
     async function submitRank() {
       const nameInput = document.getElementById("rank-name");
       const name = nameInput.value.trim();
@@ -781,13 +840,13 @@
 
     const BRICK_STYLES = [
       null,
-      { main: "#E2E8F0", light: "#FFFFFF", dark: "#94A3B8" }, // 1: 파로스 백대리석
-      { main: "#D4AF37", light: "#FDE68A", dark: "#92400E" }, // 2: 올림포스 황금 벽돌
-      { main: "#C26D53", light: "#E69A83", dark: "#7C2D12" }, // 3: 고대 테라코타 점토 벽돌
-      { main: "#1D63B8", light: "#60A5FA", dark: "#1E3A8A" }, // 4: 에게해 청금석 타일
-      { main: "#CBD5E1", light: "#F1F5F9", dark: "#64748B" }, // 5: 펜텔리콘 회대리석
-      { main: "#B48A4E", light: "#E5C697", dark: "#6B4C23" }, // 6: 사암 석회석 블록
-      { main: "#2E8B57", light: "#6EE7B7", dark: "#064E3B" }  // 7: 올리브 청동 석판
+      { main: "#E2E8F0", light: "#FFFFFF", dark: "#94A3B8" },
+      { main: "#D4AF37", light: "#FDE68A", dark: "#92400E" },
+      { main: "#C26D53", light: "#E69A83", dark: "#7C2D12" },
+      { main: "#1D63B8", light: "#60A5FA", dark: "#1E3A8A" },
+      { main: "#CBD5E1", light: "#F1F5F9", dark: "#64748B" },
+      { main: "#B48A4E", light: "#E5C697", dark: "#6B4C23" },
+      { main: "#2E8B57", light: "#6EE7B7", dark: "#064E3B" }
     ];
 
     const SHAPES = [
@@ -952,6 +1011,7 @@
     });
 
     // 초기 실행
+    initQRCode();
     renderGallery();
     renderPoll();
     renderLeaderboard();
